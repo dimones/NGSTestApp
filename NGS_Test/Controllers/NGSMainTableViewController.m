@@ -8,6 +8,8 @@
 
 #import "NGSMainTableViewController.h"
 #import "NGSAdvertViewCell.h"
+#import "UIScrollView+InfiniteScroll.h"
+#import <Social/Social.h>
 
 #define time_pattern @"yyyy-MM-dd'T'HH:mm:ssZZZ"
 #define time_pattern_out @"dd.MM.yyyy"
@@ -20,11 +22,14 @@
     NSMutableDictionary *tags;
     NSMutableDictionary *uploads;
     NSMutableArray *adverts;
+    //Counters for adverts
+    NSUInteger offset;
 }
+@property (strong,nonatomic) NGS_API *api;
 @end
 
 @implementation NGSMainTableViewController
-@synthesize advertsTable;
+@synthesize advertsTable,api;
 
 - (void) viewDidLoad{
     [super viewDidLoad];
@@ -41,6 +46,14 @@
     [self initStorage];
     //Get first part of data
     [api getAdverts:20 andOffset:0];
+    offset += 20;
+    //Add infinite scroll table
+    advertsTable.infiniteScrollIndicatorStyle = UIActivityIndicatorViewStyleGray;
+    
+    [advertsTable addInfiniteScrollWithHandler:^(id scrollView) {
+        [api getAdverts:20 andOffset:offset];
+        offset += 20;
+    }];
 }
 - (void) initStorage{
     tags = [NSMutableDictionary new];
@@ -67,7 +80,8 @@
 - (NSString*) getResolvedTagsString:(NSArray*) _tags{
     __block NSString *outstring = @"";
     [_tags enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        outstring = [outstring stringByAppendingString:tags[obj][@"title"]];
+        outstring = [outstring stringByAppendingString:[tags[obj][@"title"] stringByReplacingCharactersInRange:NSMakeRange(0,1)
+                                                                                                    withString:[[tags[obj][@"title"] substringToIndex:1] capitalizedString]]];
     }];
     return outstring;
 }
@@ -76,6 +90,19 @@
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    id pTemp = adverts[indexPath.row];
+    id obj;
+    if (![pTemp[@"short_images"][@"main"] isKindOfClass:[NSNull class]]) {
+        obj = uploads[pTemp[@"short_images"][@"main"][@"links"][@"origin"]];
+    }
+    
+    NSURL  *url = [NSURL URLWithString:
+                   [NSString stringWithFormat:@"http://%@/%@.%@",obj[@"domain"], obj[@"file_name"], obj[@"file_extension"]]];
+    NSArray *activityItems = @[pTemp[@"title"],url];
+    UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+    [self presentViewController:activityViewController animated:YES completion:^{
+        
+    }];
     
 }
 
@@ -88,13 +115,16 @@
     id pTemp = adverts[indexPath.row];
     cell.advertName.text = pTemp[@"title"];
     cell.advertTopText.text = [NSString stringWithFormat:@"%@ • %@",[self getResolvedTagsString:pTemp[@"links"][@"tags"]],[self stringFromDate:[self dateFromString:pTemp[@"update_date"]]]];
+    
     if (((NSNumber*)pTemp[@"cost"]).integerValue != 0)
-        cell.advertPrice.text = ((NSNumber*)pTemp[@"cost"]).stringValue;
+        cell.advertPrice.text = [((NSNumber*)pTemp[@"cost"]).stringValue stringByAppendingString:@" руб."];
     else cell.advertPrice.text = @"Не указано";
-    NSLog(@"%ld",indexPath.row);
+    
     if (![pTemp[@"short_images"][@"main"] isKindOfClass:[NSNull class]]) {
         [cell loadImage:uploads[pTemp[@"short_images"][@"main"][@"links"][@"origin"]]];
     }
+    else
+        [cell.advertImage setImage:[UIImage imageNamed:@"blank_image.png"]];
     
     return cell;
 }
@@ -118,8 +148,6 @@
 
 - (void) NGSAPIDidRecieveResults:(NGS_API *)api andResults:(id)results
 {
-    NSLog(@"RESULTS\n________________________");
-    //    NSLog(@"%@",results);
     //Turn all recieved tags to storage
     [[results[@"linked"][@"tags"] allKeys] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (![tags objectForKey:obj])

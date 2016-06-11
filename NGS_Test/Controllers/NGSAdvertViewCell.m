@@ -7,34 +7,26 @@
 //
 
 #import "NGSAdvertViewCell.h"
-
+#import "UIImageLoader.h"
 @implementation NGSAdvertViewCell
 @synthesize advertName,advertImage,advertPrice,advertTopText;
 
 - (void) loadImage: (NSDictionary*) obj
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        //Build URL for download image
-        NSURL  *url = [NSURL URLWithString:
-                       [NSString stringWithFormat:@"http://%@/%@.%@",obj[@"domain"], obj[@"file_name"], obj[@"file_extension"]]];
-        NSData *urlData = [NSData dataWithContentsOfURL:url];
-        if (urlData) {
-            __block UIImage *img = [UIImage imageWithData:urlData];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                UIGraphicsBeginImageContextWithOptions(img.size, NO, img.scale);
-                
-                [img drawAtPoint:CGPointZero];
-                
-                img = UIGraphicsGetImageFromCurrentImageContext();
-                
-                UIGraphicsEndImageContext();
-                CGImageRef imageRef = CGImageCreateWithImageInRect([img CGImage], CGRectMake(0, 0, advertImage.frame.size.width, advertImage.frame.size.height));
-                // or use the UIImage wherever you like
-                [advertImage setImage:[UIImage imageWithCGImage:imageRef]];
-                CGImageRelease(imageRef);
-            });
-            
+    NSURL  *url = [NSURL URLWithString:
+                   [NSString stringWithFormat:@"http://%@/%@.%@",obj[@"domain"], obj[@"file_name"], obj[@"file_extension"]]];
+    [[UIImageLoader defaultLoader] loadImageWithURL:url hasCache:^(UIImageLoaderImage *image, UIImageLoadSource loadedFromSource) {
+        self.advertImage.image = image;
+        self.advertImage.contentMode = UIViewContentModeScaleAspectFit;
+        
+    } sendingRequest:^(BOOL didHaveCachedImage) {
+        if(!didHaveCachedImage) {
+            self.advertImage.image = [UIImage imageNamed:@"blank_image"];
         }
-    });
+    } requestCompleted:^(NSError *error, UIImageLoaderImage *image, UIImageLoadSource loadedFromSource) {
+        if(loadedFromSource == UIImageLoadSourceNetworkToDisk) {
+            self.advertImage.image = image;
+        }
+    }];
 }
 @end

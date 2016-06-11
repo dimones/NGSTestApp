@@ -15,6 +15,9 @@
 		46A0E2DE1D0ADFD30065A387 /* NGS_API.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A0E2DD1D0ADFD30065A387 /* NGS_API.m */; };
 		46A0E2E21D0AE3EB0065A387 /* NGSMainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A0E2E11D0AE3EB0065A387 /* NGSMainTableViewController.m */; };
 		46A0E2E51D0AE7BD0065A387 /* NGSAdvertViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A0E2E41D0AE7BD0065A387 /* NGSAdvertViewCell.m */; };
+		46DA19781D0B02C6000A950D /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46DA19771D0B02C6000A950D /* Social.framework */; };
+		46DA197F1D0B0B8E000A950D /* UIImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 46DA197E1D0B0B8E000A950D /* UIImageLoader.m */; };
+		46DA19831D0B0C91000A950D /* UIScrollView+InfiniteScroll.m in Sources */ = {isa = PBXBuildFile; fileRef = 46DA19821D0B0C91000A950D /* UIScrollView+InfiniteScroll.m */; };
 		74582839673253A519A94E5D /* libPods-NGS_Test.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2FFB5C5AAAEB4114C03DB982 /* libPods-NGS_Test.a */; };
 /* End PBXBuildFile section */
 
@@ -34,6 +37,11 @@
 		46A0E2E11D0AE3EB0065A387 /* NGSMainTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NGSMainTableViewController.m; path = Controllers/NGSMainTableViewController.m; sourceTree = "<group>"; };
 		46A0E2E31D0AE7BD0065A387 /* NGSAdvertViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NGSAdvertViewCell.h; path = Controllers/NGSAdvertViewCell.h; sourceTree = "<group>"; };
 		46A0E2E41D0AE7BD0065A387 /* NGSAdvertViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NGSAdvertViewCell.m; path = Controllers/NGSAdvertViewCell.m; sourceTree = "<group>"; };
+		46DA19771D0B02C6000A950D /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		46DA197D1D0B0B8E000A950D /* UIImageLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UIImageLoader.h; path = LIbraries/UIImageLoader.h; sourceTree = "<group>"; };
+		46DA197E1D0B0B8E000A950D /* UIImageLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UIImageLoader.m; path = LIbraries/UIImageLoader.m; sourceTree = "<group>"; };
+		46DA19811D0B0C91000A950D /* UIScrollView+InfiniteScroll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+InfiniteScroll.h"; sourceTree = "<group>"; };
+		46DA19821D0B0C91000A950D /* UIScrollView+InfiniteScroll.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+InfiniteScroll.m"; sourceTree = "<group>"; };
 		7A22E61EA4719FCCF77A4527 /* Pods-NGS_Test.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NGS_Test.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NGS_Test/Pods-NGS_Test.debug.xcconfig"; sourceTree = "<group>"; };
 		F7D022BAE110D47E58654BDE /* Pods-NGS_Test.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NGS_Test.release.xcconfig"; path = "Pods/Target Support Files/Pods-NGS_Test/Pods-NGS_Test.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -43,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46DA19781D0B02C6000A950D /* Social.framework in Frameworks */,
 				74582839673253A519A94E5D /* libPods-NGS_Test.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -62,6 +71,7 @@
 		3D729A4CC9B1EA0D07BBEBB2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				46DA19771D0B02C6000A950D /* Social.framework */,
 				2FFB5C5AAAEB4114C03DB982 /* libPods-NGS_Test.a */,
 			);
 			name = Frameworks;
@@ -88,6 +98,7 @@
 		461BDDA91D0ADF59005A7249 /* NGS_Test */ = {
 			isa = PBXGroup;
 			children = (
+				46DA19801D0B0B92000A950D /* Libraries */,
 				46A0E2DF1D0AE3820065A387 /* Controllers */,
 				46A0E2DB1D0ADFBC0065A387 /* API */,
 				461BDDAD1D0ADF59005A7249 /* AppDelegate.h */,
@@ -127,6 +138,17 @@
 				46A0E2E41D0AE7BD0065A387 /* NGSAdvertViewCell.m */,
 			);
 			name = Controllers;
+			sourceTree = "<group>";
+		};
+		46DA19801D0B0B92000A950D /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				46DA197D1D0B0B8E000A950D /* UIImageLoader.h */,
+				46DA197E1D0B0B8E000A950D /* UIImageLoader.m */,
+				46DA19811D0B0C91000A950D /* UIScrollView+InfiniteScroll.h */,
+				46DA19821D0B0C91000A950D /* UIScrollView+InfiniteScroll.m */,
+			);
+			name = Libraries;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -250,10 +272,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46DA19831D0B0C91000A950D /* UIScrollView+InfiniteScroll.m in Sources */,
 				46A0E2DE1D0ADFD30065A387 /* NGS_API.m in Sources */,
 				461BDDAF1D0ADF59005A7249 /* AppDelegate.m in Sources */,
 				461BDDAC1D0ADF59005A7249 /* main.m in Sources */,
 				46A0E2E21D0AE3EB0065A387 /* NGSMainTableViewController.m in Sources */,
+				46DA197F1D0B0B8E000A950D /* UIImageLoader.m in Sources */,
 				46A0E2E51D0AE7BD0065A387 /* NGSAdvertViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
