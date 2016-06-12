@@ -24,16 +24,23 @@
     NSMutableArray *adverts;
     //Counters for adverts
     NSUInteger offset;
+    //Bool
 }
-@property (strong,nonatomic) NGS_API *api;
+@property (strong, nonatomic) NGS_API *api;
+@property (strong, nonatomic) UIRefreshControl *refreshControl;
 @end
 
 @implementation NGSMainTableViewController
-@synthesize advertsTable,api;
+@synthesize advertsTable,api,refreshControl;
 
 - (void) viewDidLoad{
     [super viewDidLoad];
     self.title = @"Объявления";
+    //Init refreshControl
+    refreshControl = [UIRefreshControl new];
+    refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Идет обновление"];
+    [refreshControl addTarget:self action:@selector(refresh) forControlEvents:UIControlEventValueChanged];
+    [advertsTable addSubview:refreshControl];
     //Init UITableView with their delegates
     advertsTable.delegate = self;
     advertsTable.dataSource = self;
@@ -54,6 +61,9 @@
         [api getAdverts:20 andOffset:offset];
         offset += 20;
     }];
+}
+- (void) refresh{
+    [api getAdverts:50 andOffset:0];
 }
 - (void) initStorage{
     tags = [NSMutableDictionary new];
@@ -118,7 +128,7 @@
     
     if (((NSNumber*)pTemp[@"cost"]).integerValue != 0)
         cell.advertPrice.text = [((NSNumber*)pTemp[@"cost"]).stringValue stringByAppendingString:@" руб."];
-    else cell.advertPrice.text = @"Не указано";
+    else cell.advertPrice.text = @"цена не указана";
     
     if (![pTemp[@"short_images"][@"main"] isKindOfClass:[NSNull class]]) {
         [cell loadImage:uploads[pTemp[@"short_images"][@"main"][@"links"][@"origin"]]];
@@ -142,6 +152,8 @@
 #pragma mark - delegate NGSAPIDelegate
 - (void) NGSAPIDidFail:(NGS_API *)api andError:(NSError *)error
 {
+    if (refreshControl.refreshing)
+        [refreshControl endRefreshing];
     NSLog(@"ERROR\n________________________");
     NSLog(@"%@",error);
 }
@@ -158,6 +170,18 @@
             [uploads setObject:results[@"linked"][@"uploads"][obj] forKey:obj];
     }];
     [adverts addObjectsFromArray:results[@"adverts"]];
+    NSSet *set = [NSSet setWithArray:adverts];
+    [adverts removeAllObjects];
+    [adverts addObjectsFromArray:[set allObjects]];
+    NSArray *sortedArray = [adverts sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        return [[self dateFromString:[obj1 valueForKey:@"update_date"]] compare:[self dateFromString:[obj2 valueForKey:@"update_date"]]];
+    }];
+    [adverts removeAllObjects];
+    [adverts addObjectsFromArray:sortedArray];
+    
+    if (refreshControl.refreshing)
+        [refreshControl endRefreshing];
+    
     [self.tableView reloadData];
 }
 @end
