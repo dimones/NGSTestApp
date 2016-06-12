@@ -62,13 +62,6 @@
         [api getAdverts:20 andOffset:offset];
         offset += 20;
     }];
-    //    
-    //    advertsTable.infiniteScrollIndicatorStyle = UIActivityIndicatorViewStyleGray;
-    //    
-    //    [advertsTable addInfiniteScrollWithHandler:^(id scrollView) {
-    //        [api getAdverts:20 andOffset:offset];
-    //        offset += 20;
-    //    }];
     //Hide last separator
     advertsTable.tableFooterView = [UIView new];
 }
@@ -116,9 +109,9 @@
         obj = uploads[pTemp[@"short_images"][@"main"][@"links"][@"origin"]];
     }
     
-    NSURL  *url = [NSURL URLWithString:
-                   [NSString stringWithFormat:@"http://%@/%@.%@",obj[@"domain"], obj[@"file_name"], obj[@"file_extension"]]];
-    NSArray *activityItems = @[pTemp[@"title"],url];
+    //    NSURL  *url = [NSURL URLWithString:
+    //                   [NSString stringWithFormat:@"http://%@/%@.%@",obj[@"domain"], obj[@"file_name"], obj[@"file_extension"]]];
+    NSArray *activityItems = @[pTemp[@"title"]];
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
     [self presentViewController:activityViewController animated:YES completion:^{
         
@@ -147,7 +140,6 @@
     {
         [cell.advertImage setImage:[UIImage imageNamed:@"blank_image.png"]];
         cell.advertImage.contentMode = UIViewContentModeScaleToFill;
-        
     }
     
     return cell;
@@ -170,6 +162,15 @@
         [refreshControl endRefreshing];
     NSLog(@"ERROR\n________________________");
     NSLog(@"%@",error);
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Внимание"
+                                                                   message:@"Возникла проблема с получением данных! Проверьте свое интернет соединение."
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {}];
+    
+    [alert addAction:defaultAction];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void) NGSAPIDidRecieveResults:(NGS_API *)api andResults:(id)results
@@ -183,6 +184,7 @@
         if (![uploads objectForKey:obj])
             [uploads setObject:results[@"linked"][@"uploads"][obj] forKey:obj];
     }];
+    //universal method for update data(from begin and from end with offset)
     //Temp array for next comparsions
     NSMutableArray *tAdverts = [NSMutableArray arrayWithArray:adverts];
     [tAdverts addObjectsFromArray:results[@"adverts"]];
