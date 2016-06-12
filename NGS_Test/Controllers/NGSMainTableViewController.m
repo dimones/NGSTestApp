@@ -8,7 +8,7 @@
 
 #import "NGSMainTableViewController.h"
 #import "NGSAdvertViewCell.h"
-#import "UIScrollView+InfiniteScroll.h"
+#import <UIScrollView+InfiniteScroll.h>
 #import <Social/Social.h>
 
 #define time_pattern @"yyyy-MM-dd'T'HH:mm:ssZZZ"
@@ -57,13 +57,23 @@
     //Add infinite scroll table
     advertsTable.infiniteScrollIndicatorStyle = UIActivityIndicatorViewStyleGray;
     
-    [advertsTable addInfiniteScrollWithHandler:^(id scrollView) {
+    // setup infinite scroll
+    [advertsTable addInfiniteScrollWithHandler:^(UITableView* tableView) {
         [api getAdverts:20 andOffset:offset];
         offset += 20;
     }];
+    //    
+    //    advertsTable.infiniteScrollIndicatorStyle = UIActivityIndicatorViewStyleGray;
+    //    
+    //    [advertsTable addInfiniteScrollWithHandler:^(id scrollView) {
+    //        [api getAdverts:20 andOffset:offset];
+    //        offset += 20;
+    //    }];
+    //Hide last separator
+    advertsTable.tableFooterView = [UIView new];
 }
 - (void) refresh{
-    [api getAdverts:50 andOffset:0];
+    [api getAdverts:20 andOffset:0];
 }
 - (void) initStorage{
     tags = [NSMutableDictionary new];
@@ -134,7 +144,11 @@
         [cell loadImage:uploads[pTemp[@"short_images"][@"main"][@"links"][@"origin"]]];
     }
     else
+    {
         [cell.advertImage setImage:[UIImage imageNamed:@"blank_image.png"]];
+        cell.advertImage.contentMode = UIViewContentModeScaleToFill;
+        
+    }
     
     return cell;
 }
@@ -169,19 +183,24 @@
         if (![uploads objectForKey:obj])
             [uploads setObject:results[@"linked"][@"uploads"][obj] forKey:obj];
     }];
-    [adverts addObjectsFromArray:results[@"adverts"]];
-    NSSet *set = [NSSet setWithArray:adverts];
+    //Temp array for next comparsions
+    NSMutableArray *tAdverts = [NSMutableArray arrayWithArray:adverts];
+    [tAdverts addObjectsFromArray:results[@"adverts"]];
+    //Sort array of dictionaries by date
+    
+    NSArray *sortedArray = [tAdverts sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        return [[self dateFromString:[obj2 valueForKey:@"update_date"]] compare:[self dateFromString:[obj1 valueForKey:@"update_date"]]];
+    }];
+    [tAdverts removeAllObjects];
+    [tAdverts addObjectsFromArray:sortedArray];
+    NSSet *set = [NSSet setWithArray:tAdverts];
+    
     [adverts removeAllObjects];
     [adverts addObjectsFromArray:[set allObjects]];
-    NSArray *sortedArray = [adverts sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        return [[self dateFromString:[obj1 valueForKey:@"update_date"]] compare:[self dateFromString:[obj2 valueForKey:@"update_date"]]];
-    }];
-    [adverts removeAllObjects];
-    [adverts addObjectsFromArray:sortedArray];
-    
+    [advertsTable reloadData];
+    [advertsTable finishInfiniteScroll];
     if (refreshControl.refreshing)
         [refreshControl endRefreshing];
     
-    [self.tableView reloadData];
 }
 @end

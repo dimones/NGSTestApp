@@ -22,10 +22,17 @@
     } sendingRequest:^(BOOL didHaveCachedImage) {
         if(!didHaveCachedImage) {
             self.advertImage.image = [UIImage imageNamed:@"blank_image"];
+            self.advertImage.contentMode = UIViewContentModeScaleToFill;
+            
         }
     } requestCompleted:^(NSError *error, UIImageLoaderImage *image, UIImageLoadSource loadedFromSource) {
         if(loadedFromSource == UIImageLoadSourceNetworkToDisk) {
-            self.advertImage.image = image;
+            [UIView transitionWithView:self.advertImage
+                              duration:0.2f
+                               options:UIViewAnimationOptionTransitionCrossDissolve
+                            animations:^{
+                                self.advertImage.image = image;
+                            } completion:nil];
         }
     }];
 }
