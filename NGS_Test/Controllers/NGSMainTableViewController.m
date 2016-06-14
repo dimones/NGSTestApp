@@ -81,7 +81,7 @@
     NSString *stringFromDate = [formatter stringFromDate:date];
     return stringFromDate!=nil?stringFromDate:@"";
 }
-
+//make NSDate from formatted string
 - (NSDate *) dateFromString:(NSString*) string
 {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -89,7 +89,7 @@
     NSDate *date = [[dateFormatter dateFromString:string] dateByAddingTimeInterval:6*60*60];
     return date;
 }
-
+//In tags array may be more than one tag
 - (NSString*) getResolvedTagsString:(NSArray*) _tags{
     __block NSString *outstring = @"";
     [_tags enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -108,9 +108,6 @@
     if (![pTemp[@"short_images"][@"main"] isKindOfClass:[NSNull class]]) {
         obj = uploads[pTemp[@"short_images"][@"main"][@"links"][@"origin"]];
     }
-    
-    //    NSURL  *url = [NSURL URLWithString:
-    //                   [NSString stringWithFormat:@"http://%@/%@.%@",obj[@"domain"], obj[@"file_name"], obj[@"file_extension"]]];
     NSArray *activityItems = @[pTemp[@"title"]];
     UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
     [self presentViewController:activityViewController animated:YES completion:^{
@@ -121,6 +118,7 @@
 
 - (UITableViewCell*) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    //Prepare cell for showing
     NGSAdvertViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_ID forIndexPath:indexPath];
     if (!cell) {
         cell = [NGSAdvertViewCell new];
